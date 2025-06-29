@@ -7,7 +7,7 @@ namespace server.Mappers
 {
     public static class StockMappers
     {
-        public static server.Dtos.Stock.StockDto getStockWithoutComments(this server.Models.Stock stock)
+        public static server.Dtos.Stock.StockDto getStockWithoutCommentsDto(this server.Models.Stock stock)
         {
             return new server.Dtos.Stock.StockDto
             {
@@ -21,7 +21,7 @@ namespace server.Mappers
             };
         }
 
-        public static server.Models.Stock createStock(this server.Dtos.Stock.CreateStockDto stock)
+        public static server.Models.Stock createStockDto(this server.Dtos.Stock.CreateStockDto stock)
         {
             return new server.Models.Stock
             {

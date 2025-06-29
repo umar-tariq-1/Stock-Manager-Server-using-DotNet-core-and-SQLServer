@@ -10,7 +10,7 @@ using server.Models;
 
 namespace server.Repositories
 {
-    public class StcokRepository(server.Data.ApplicationDBContext context) : IStockRepository
+    public class StockRepository(server.Data.ApplicationDBContext context) : IStockRepository
     {
         private readonly server.Data.ApplicationDBContext _context = context;
 

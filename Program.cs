@@ -8,12 +8,17 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
 builder.Services.AddDbContext<server.Data.ApplicationDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<server.Interfaces.IStockRepository, server.Repositories.StcokRepository>();
+builder.Services.AddScoped<server.Interfaces.IStockRepository, server.Repositories.StockRepository>();
+builder.Services.AddScoped<server.Interfaces.ICommentRepository, server.Repositories.CommentRepository>();
 
 var app = builder.Build();
 

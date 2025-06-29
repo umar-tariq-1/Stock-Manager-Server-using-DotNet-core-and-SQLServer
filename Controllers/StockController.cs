@@ -21,9 +21,16 @@ namespace server.Controllers
             var stock = await _stockRepository.GetStockByIdAsyn(id);
             if (stock == null)
             {
-                return NotFound();
+                return NotFound("Stock not found.");
             }
-            return Ok(stock.getStockWithoutComments());
+            return Ok(stock.getStockWithoutCommentsDto());
+        }
+
+        [HttpGet("/api/stocks")]
+        public async Task<IActionResult> GetStocks()
+        {
+            var stocks = await _stockRepository.GetStocksAsyn();
+            return Ok(stocks.Select(s => s.getStockWithoutCommentsDto()).ToList());
         }
 
         [HttpPost]
@@ -45,9 +52,9 @@ namespace server.Controllers
             }
 
             //Create after validation
-            var newStock = createStockDto.createStock();
+            var newStock = createStockDto.createStockDto();
             await _stockRepository.CreateStockAsync(newStock);
-            return CreatedAtAction(nameof(GetStock), new { id = newStock.Id }, newStock.getStockWithoutComments());
+            return CreatedAtAction(nameof(GetStock), new { id = newStock.Id }, newStock.getStockWithoutCommentsDto());
         }
 
         [HttpPut("{id}")]
@@ -73,7 +80,7 @@ namespace server.Controllers
                 return NotFound();
             }
 
-            return Ok(updatedStock.getStockWithoutComments());
+            return Ok(updatedStock.getStockWithoutCommentsDto());
         }
 
         [HttpDelete("{id}")]
