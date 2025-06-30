@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace server.Dtos.Comment
 {
-    public class CreateCommentDto
+    public class UpdateCommentDto
     {
         [Required]
         [MaxLength(20, ErrorMessage = "Title can't be longer than 100 characters.")]

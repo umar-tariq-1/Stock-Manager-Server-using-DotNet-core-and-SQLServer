@@ -9,7 +9,7 @@ namespace server.Mappers
 {
     public static class CommentMappers
     {
-        public static server.Dtos.Comment.CommentDto ToCommentDto(this Comment comment)
+        public static CommentDto ToCommentDto(this Comment comment)
         {
 
             return new CommentDto

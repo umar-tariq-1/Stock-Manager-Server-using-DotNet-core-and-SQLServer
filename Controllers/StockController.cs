@@ -16,20 +16,32 @@ namespace server.Controllers
     {
         private readonly IStockRepository _stockRepository = stockRepository;
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetStock(int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var stock = await _stockRepository.GetStockByIdAsyn(id);
+
             if (stock == null)
             {
                 return NotFound("Stock not found.");
             }
+
             return Ok(stock.ToStockDto());
         }
 
         [HttpGet("/api/stocks")]
         public async Task<IActionResult> GetStocks()
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var stocks = await _stockRepository.GetStocksAsyn();
             return Ok(stocks.Select(s => s.ToStockDto()).ToList());
         }
@@ -37,19 +49,9 @@ namespace server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateStock([FromBody] CreateStockDto createStockDto)
         {
-            // Validate the input
-            if (createStockDto == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
-            }
-            else if (string.IsNullOrEmpty(createStockDto.Symbol) || string.IsNullOrEmpty(createStockDto.CompanyName) || string.IsNullOrEmpty(createStockDto.Industry))
-            {
-                return BadRequest("Symbol, CompanyName, and Industry cannot be empty.");
-            }
-
-            else if (createStockDto.Purchase < 0 || createStockDto.LastDiv < 0 || createStockDto.MarketCap < 0)
-            {
-                return BadRequest("Purchase, LastDiv, and MarketCap must be non-negative.");
+                return BadRequest(ModelState);
             }
 
             var newStock = createStockDto.CreateStockDto();
@@ -57,20 +59,12 @@ namespace server.Controllers
             return CreatedAtAction(nameof(GetStock), new { id = newStock.Id }, newStock.ToStockDto());
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] UpdateStockDto stock)
         {
-            if (stock == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Stock cannot be null.");
-            }
-            else if (string.IsNullOrEmpty(stock.Symbol) || string.IsNullOrEmpty(stock.CompanyName) || string.IsNullOrEmpty(stock.Industry))
-            {
-                return BadRequest("Symbol, CompanyName, and Industry cannot be empty.");
-            }
-            else if (stock.Purchase < 0 || stock.LastDiv < 0 || stock.MarketCap < 0)
-            {
-                return BadRequest("Purchase, LastDiv, and MarketCap must be non-negative.");
+                return BadRequest(ModelState);
             }
 
             var updatedStock = await _stockRepository.UpdateStockAsync(id, stock);
@@ -83,10 +77,16 @@ namespace server.Controllers
             return Ok(updatedStock.ToStockDto());
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteStock(int id)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var stock = await _stockRepository.DeleteStockAsync(id);
+
             if (stock == null)
             {
                 return NotFound("Stock not found.");
