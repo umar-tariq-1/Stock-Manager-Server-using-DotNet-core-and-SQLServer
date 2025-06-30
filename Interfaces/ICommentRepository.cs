@@ -10,5 +10,7 @@ namespace server.Interfaces
     {
         public Task<List<Comment>> GetAllComments();
         public Task<Comment?> GetCommentById(int id);
+
+        public Task<Comment> CreateCommentAsync(Comment comment);
     }
 }

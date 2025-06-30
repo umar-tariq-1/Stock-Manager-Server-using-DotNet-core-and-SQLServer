@@ -36,14 +36,19 @@ namespace server.Repositories
 
         public async Task<Stock?> GetStockByIdAsyn(int id)
         {
-            var stock = await _context.Stocks.FindAsync(id);
+            var stock = await _context.Stocks.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == id);
             return stock;
         }
 
         public async Task<List<Stock>> GetStocksAsyn()
         {
-            List<Stock> stocks = await _context.Stocks.ToListAsync();
+            List<Stock> stocks = await _context.Stocks.Include(s => s.Comments).ToListAsync();
             return stocks;
+        }
+
+        public async Task<bool> StockExistsAsync(int id)
+        {
+            return await _context.Stocks.AnyAsync(s => s.Id == id);
         }
 
         public async Task<Stock?> UpdateStockAsync(int id, UpdateStockDto stock)

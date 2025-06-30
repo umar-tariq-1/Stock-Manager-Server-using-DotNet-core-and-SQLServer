@@ -4,16 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using server.Dtos.Stock;
+using server.Interfaces;
 using server.Mappers;
 
 namespace server.Controllers
 {
     [Route("api/stock")]
     [ApiController]
-    public class StockController(Data.ApplicationDBContext context, Interfaces.IStockRepository stockRepository) : ControllerBase
+    public class StockController(IStockRepository stockRepository) : ControllerBase
     {
-        private readonly Data.ApplicationDBContext _context = context;
-        private readonly Interfaces.IStockRepository _stockRepository = stockRepository;
+        private readonly IStockRepository _stockRepository = stockRepository;
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStock(int id)
@@ -23,18 +24,18 @@ namespace server.Controllers
             {
                 return NotFound("Stock not found.");
             }
-            return Ok(stock.getStockWithoutCommentsDto());
+            return Ok(stock.ToStockDto());
         }
 
         [HttpGet("/api/stocks")]
         public async Task<IActionResult> GetStocks()
         {
             var stocks = await _stockRepository.GetStocksAsyn();
-            return Ok(stocks.Select(s => s.getStockWithoutCommentsDto()).ToList());
+            return Ok(stocks.Select(s => s.ToStockDto()).ToList());
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStock([FromBody] server.Dtos.Stock.CreateStockDto createStockDto)
+        public async Task<IActionResult> CreateStock([FromBody] CreateStockDto createStockDto)
         {
             // Validate the input
             if (createStockDto == null)
@@ -51,14 +52,13 @@ namespace server.Controllers
                 return BadRequest("Purchase, LastDiv, and MarketCap must be non-negative.");
             }
 
-            //Create after validation
-            var newStock = createStockDto.createStockDto();
+            var newStock = createStockDto.CreateStockDto();
             await _stockRepository.CreateStockAsync(newStock);
-            return CreatedAtAction(nameof(GetStock), new { id = newStock.Id }, newStock.getStockWithoutCommentsDto());
+            return CreatedAtAction(nameof(GetStock), new { id = newStock.Id }, newStock.ToStockDto());
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStock(int id, [FromBody] server.Dtos.Stock.UpdateStockDto stock)
+        public async Task<IActionResult> UpdateStock(int id, [FromBody] UpdateStockDto stock)
         {
             if (stock == null)
             {
@@ -80,7 +80,7 @@ namespace server.Controllers
                 return NotFound();
             }
 
-            return Ok(updatedStock.getStockWithoutCommentsDto());
+            return Ok(updatedStock.ToStockDto());
         }
 
         [HttpDelete("{id}")]

@@ -3,34 +3,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using server.Dtos.Comment;
+using server.Interfaces;
 using server.Mappers;
+using server.Models;
 
 namespace server.Controllers
 {
     [Route("api/comment")]
     [ApiController]
-    public class CommentController(server.Interfaces.ICommentRepository commentRepository) : ControllerBase
+    public class CommentController(ICommentRepository commentRepository, IStockRepository stockRepository) : ControllerBase
     {
-        private readonly server.Interfaces.ICommentRepository _commentRepository = commentRepository;
+        private readonly ICommentRepository _commentRepository = commentRepository;
+        private readonly IStockRepository _stockRepository = stockRepository;
+
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<server.Models.Comment>> GetCommentById(int id)
+        public async Task<ActionResult<Comment>> GetCommentById(int id)
         {
             var comment = await _commentRepository.GetCommentById(id);
             if (comment == null)
             {
                 return NotFound("Comment not found");
             }
-            var commentDto = comment.commentDto();
+            var commentDto = comment.ToCommentDto();
             return Ok(commentDto);
         }
 
+
         [HttpGet("/api/comments")]
-        public async Task<ActionResult<List<server.Models.Comment>>> GetAllComments()
+        public async Task<ActionResult<List<Comment>>> GetAllComments()
         {
             var comments = await _commentRepository.GetAllComments();
-            var commentDtos = comments.Select(c => c.commentDto());
+            var commentDtos = comments.Select(c => c.ToCommentDto());
             return Ok(commentDtos);
+        }
+
+
+        [HttpPost("{stockId}")]
+        public async Task<ActionResult<Comment>> CreateComment([FromBody] CreateCommentDto createCommentDto, int stockId)
+        {
+            bool doesExist = await _stockRepository.StockExistsAsync(stockId);
+            if (!doesExist)
+            {
+                return NotFound("Stock not found");
+            }
+
+            var commentModel = createCommentDto.CreateCommentDto(stockId);
+            var newComment = await _commentRepository.CreateCommentAsync(commentModel);
+
+            return CreatedAtAction(nameof(GetCommentById), new { id = newComment.Id }, newComment.ToCommentDto());
         }
     }
 }

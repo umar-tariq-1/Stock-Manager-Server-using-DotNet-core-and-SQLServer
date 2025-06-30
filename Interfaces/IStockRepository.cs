@@ -18,5 +18,7 @@ namespace server.Interfaces
         Task<Stock?> UpdateStockAsync(int id, UpdateStockDto stock);
 
         Task<Stock?> DeleteStockAsync(int id);
+
+        Task<bool> StockExistsAsync(int id);
     }
 }

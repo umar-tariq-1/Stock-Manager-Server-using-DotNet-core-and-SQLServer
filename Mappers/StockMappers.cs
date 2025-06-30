@@ -7,7 +7,7 @@ namespace server.Mappers
 {
     public static class StockMappers
     {
-        public static server.Dtos.Stock.StockDto getStockWithoutCommentsDto(this server.Models.Stock stock)
+        public static server.Dtos.Stock.StockDto ToStockDto(this server.Models.Stock stock)
         {
             return new server.Dtos.Stock.StockDto
             {
@@ -17,11 +17,12 @@ namespace server.Mappers
                 LastDiv = stock.LastDiv,
                 MarketCap = stock.MarketCap,
                 Purchase = stock.Purchase,
-                Symbol = stock.Symbol
+                Symbol = stock.Symbol,
+                Comments = [.. stock.Comments.Select(c => c.ToCommentDto())]
             };
         }
 
-        public static server.Models.Stock createStockDto(this server.Dtos.Stock.CreateStockDto stock)
+        public static server.Models.Stock CreateStockDto(this server.Dtos.Stock.CreateStockDto stock)
         {
             return new server.Models.Stock
             {
