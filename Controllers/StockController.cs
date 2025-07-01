@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Dtos.Stock;
@@ -12,6 +13,8 @@ namespace server.Controllers
 {
     [Route("api/stock")]
     [ApiController]
+    [Authorize]
+
     public class StockController(IStockRepository stockRepository) : ControllerBase
     {
         private readonly IStockRepository _stockRepository = stockRepository;

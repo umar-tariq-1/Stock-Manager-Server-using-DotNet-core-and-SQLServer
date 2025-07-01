@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using server.Dtos.Comment;
 using server.Dtos.Stock;
@@ -13,6 +14,8 @@ namespace server.Controllers
 {
     [Route("api/comment")]
     [ApiController]
+    [Authorize]
+
     public class CommentController(ICommentRepository commentRepository, IStockRepository stockRepository) : ControllerBase
     {
         private readonly ICommentRepository _commentRepository = commentRepository;
